@@ -82,31 +82,28 @@ class ProductsService extends AbstractService
 
     }
 
-    public function update(array $data)
+    public function update(int $id ,array $data)
     {
-        try {
-            $data['item_name'] = $data['itemName'];
-            $data['user_id'] = $data['userId'];
 
-            $sql = "SELECT * FROM products WHERE id = :id";
+        try {
+            $sql = "SELECT id FROM products WHERE id = :id";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam('id', $id);
             $stmt->execute();
-            $table_id = $stmt->fetchAll();
+            $table_id = $stmt->fetch();
             if (!$table_id) {
                 throw new ServiceException(
                     'Product not found',
                     self::ERROR_PRODUCT_NOT_FOUND
                 );
             }
-
             // True
             $sql = "UPDATE products 
                     Set price = :price 
                     WHERE id = :id";
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam('id', $table_id);
-            $stmt->bindParam('price', $price);
+            $stmt->bindParam('id', $id);
+            $stmt->bindParam('price', $data['price']);
             $reslut = $stmt->execute();
             if (!$reslut) {
                 throw new ServiceException(

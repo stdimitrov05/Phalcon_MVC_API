@@ -93,11 +93,10 @@ class ProductController extends AbstractController
         foreach ($this->request->getPut() as $key => $value) {
             $data[$key] = $this->request->getPut($key, ['string', 'trim']);
         }
-
         try {
             //Passing data to business logic and prepare the response
 
-            $this->productsService->update($data);
+            $this->productsService->update($id,$data);
         } catch (ServiceException $e) {
             switch ($e->getCode()) {
                 case AbstractService::ERROR_UNABLE_CREATE_PRODUCT:
