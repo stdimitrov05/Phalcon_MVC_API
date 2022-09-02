@@ -4,47 +4,50 @@
 Frontend
 =============================*/
 
-$frontendCollection = new \Phalcon\Mvc\Micro\Collection();
-$frontendCollection->setPrefix(API_VERSION);
-$frontendCollection->setHandler('\App\Controllers\FrontendController', true);
+$profileCollection = new \Phalcon\Mvc\Micro\Collection();
+$profileCollection->setPrefix(API_VERSION);
+$profileCollection->setHandler('\App\Controllers\FrontendController', true);
 
-$frontendCollection->get(
+$profileCollection->get(
     '/',
     'indexAction'
 );
-$frontendCollection->get(
-    '/home',
-    'homeAction'
-);
 
-$frontendCollection->get(
-    '/users/list',
-    'getUsers'
-);
-$frontendCollection->get(
-    '/users/id',
-    'getUsersByID'
-);
-
-$app->mount($frontendCollection);
+$app->mount($profileCollection);
 
 
 /*============================
 User Profile
 =============================*/
 $profileCollection = new \Phalcon\Mvc\Micro\Collection();
-$profileCollection->setPrefix(API_VERSION);
+$profileCollection->setPrefix(API_VERSION. "/users");
 $profileCollection->setHandler('\App\Controllers\ProfileController', true);
 
-
+//Select
 $profileCollection->get(
-    '/users',
-    'getUsersAction'
+    '/',
+    'listAction'
 );
+//Insert
 $profileCollection->post(
-    '/users',
-    'createUserAction'
+    '/',
+    'createAction'
 );
+//Select with pram id => id
+$profileCollection->get(
+    '/{id:[1-9][0-9]*}',
+    'detailsAction'
+);
+$profileCollection->get(
+    '/delete/{id:[1-9][0-9]*}',
+    'deleteAction'
+);
+//Update
+$profileCollection->put(
+    '/{id:[1-9][0-9]*}',
+    'updateAction'
+);
+
 
 
 $app->mount($profileCollection);
@@ -55,38 +58,38 @@ $app->mount($profileCollection);
 Products
 =============================*/
 
-$productCollection = new \Phalcon\Mvc\Micro\Collection();
-$productCollection->setPrefix(API_VERSION . "/products");
-$productCollection->setHandler('\App\Controllers\ProductController', true);
+$profileCollection = new \Phalcon\Mvc\Micro\Collection();
+$profileCollection->setPrefix(API_VERSION . "/products");
+$profileCollection->setHandler('\App\Controllers\ProductController', true);
 
 //Select
-$productCollection->get(
+$profileCollection->get(
     '/',
     'listAction'
 );
 //Insert
-$productCollection->post(
+$profileCollection->post(
     '/',
     'createAction'
 );
 //Select with pram id => id
-$productCollection->get(
+$profileCollection->get(
     '/{id:[1-9][0-9]*}',
     'detailsAction'
 );
-$productCollection->get(
+$profileCollection->get(
     '/delete/{id:[1-9][0-9]*}',
     'deleteAction'
 );
 //Update
-$productCollection->put(
+$profileCollection->put(
     '/{id:[1-9][0-9]*}',
     'updateAction'
 );
 
 
 
-$app->mount($productCollection);
+$app->mount($profileCollection);
 
 // Not found URLs
 $app->notFound(

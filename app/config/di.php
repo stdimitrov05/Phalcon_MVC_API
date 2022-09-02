@@ -108,7 +108,7 @@ $di->setShared(
 );
 
 $di->setShared('frontendService', '\App\Services\FrontendService');
-$di->setShared('profileService', '\App\Services\ProfileService');
+$di->setShared('profilesService', '\App\Services\ProfilesService');
 $di->setShared('productsService', '\App\Services\ProductsService');
 $di->setShared('usersService', '\App\Services\UsersService');
 $di->setShared('authService', '\App\Services\AuthService');

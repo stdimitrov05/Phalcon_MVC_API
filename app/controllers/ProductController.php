@@ -64,7 +64,7 @@ class ProductController extends AbstractController
     public function deleteAction($id)
     {
         try {
-            $response = $this->productsService->dele§te((int)$id);
+            $response = $this->productsService->delete((int)$id);
 
         } catch (ServiceException $e) {
             switch ($e->getCode()) {
