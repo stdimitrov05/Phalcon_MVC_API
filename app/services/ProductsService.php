@@ -2,15 +2,25 @@
 
 namespace App\Services;
 
-use App\Exceptions\HttpExceptions\Http404Exception;
 use App\Exceptions\ServiceException;
 use App\Models\Products;
-use App\Validation\ProductValidation;
-use App\Validation\SignupValidation;
 
+
+/**
+ * class Product
+ *
+ * @uses GRUD , array
+ */
 
 class ProductsService extends AbstractService
 {
+    /**
+     * Product list
+     *
+     * @return array
+     *
+     */
+
     public function listProducts()
     {
         $sql = "SELECT * FROM `products` ORDER BY id";
@@ -20,6 +30,13 @@ class ProductsService extends AbstractService
         return $data;
     }
 
+    /**
+     * Product create
+     *
+     * @param array $data => user_id,item_name ...
+     * @return array
+     *
+     */
 
     public function create(array $data)
     {
@@ -54,6 +71,7 @@ class ProductsService extends AbstractService
      * @param int $id
      * @return array
      */
+
     public function details(int $id)
     {
         $data = [];
@@ -81,6 +99,15 @@ class ProductsService extends AbstractService
         return $details;
 
     }
+
+    /**
+     * Product update
+     *
+     * @param int $id
+     * @param  array $data
+     * @return array
+     *
+     */
 
     public function update(int $id ,array $data)
     {
@@ -119,6 +146,12 @@ class ProductsService extends AbstractService
         return null;
     }
 
+    /**
+     * Product delete by id
+     * @param int $id
+     * @return array
+     *
+     */
 
     public function delete(int $id)
     {
