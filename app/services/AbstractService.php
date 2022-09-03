@@ -25,9 +25,16 @@ abstract class AbstractService extends \Phalcon\DI\Injectable
      * User errors
      */
     const ERROR_UNABLE_CREATE_USER = 11001;
+    const ERROR_DUPLICATE_USER = 1108;
     const ERROR_USER_NOT_FOUND = 11002;
     const ERROR_UNABLE_UPDATE_USER = 11004;
     const ERROR_USER_NOT_DELETE = 11006;
+
+
+    const ERROR_UNABLE_CREATE_TOKEN = 110010;
+    const ERROR_TOKEN_NOT_FOUND = 11020;
+    const ERROR_UNABLE_UPDATE_TOKEN = 11030;
+    const ERROR_TOKEN_NOT_DELETE = 11040;
 
     /*
      * Email confirmation errors

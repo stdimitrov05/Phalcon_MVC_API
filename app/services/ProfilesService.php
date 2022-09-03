@@ -4,12 +4,12 @@ namespace App\Services;
 
 use App\Exceptions\ServiceException;
 use App\Models\Users;
-use App\Services\AbstractService;
+use App\Models\Tokens;
 
 class ProfilesService extends AbstractService
 {
     /**
-     * Product list
+     * Users list
      *
      * @return array
      *
@@ -24,8 +24,9 @@ class ProfilesService extends AbstractService
         return $data;
     }
 
+
     /**
-     * Product create
+     * User create
      *
      * @param array $data => user_id,item_name ...
      * @return array
@@ -34,11 +35,13 @@ class ProfilesService extends AbstractService
 
     public function create(array $data)
     {
+
         try {
 
             $users = new Users();
             $users->assign($data); //table data
             $result = $users->create(); // create
+
 
             if (!$result) {
                 throw new ServiceException(
@@ -46,6 +49,7 @@ class ProfilesService extends AbstractService
                     self::ERROR_UNABLE_CREATE_USER
                 );
             }
+
 
         } catch (\PDOException $e) {
             throw new ServiceException($e->getMessage(), $e->getCode(), $e);
@@ -94,12 +98,12 @@ class ProfilesService extends AbstractService
      * Product update
      *
      * @param int $id
-     * @param  array $data
+     * @param array $data
      * @return array
      *
      */
 
-    public function update(int $id ,array $data)
+    public function update(int $id, array $data)
     {
 
         try {
@@ -179,6 +183,52 @@ class ProfilesService extends AbstractService
         }
 
         return null;
+    }
+
+    /**
+     * Product delete by username
+     * @param int $id
+     * @return array
+     *
+     */
+    public function deleteByUsername(int $id)
+    {
+        try {
+            $sql = "SELECT username FROM `users` WHERE id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam('id', $id);
+            $stmt->execute();
+            $details = $stmt->fetch();
+
+            if (!$details) {
+                throw new ServiceException(
+                    'User not found',
+                    self::ERROR_USER_NOT_FOUND
+                );
+            }
+            // True
+            $sql = "DELETE  FROM `users`
+                    WHERE username = :username";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam('username', $details['username']);
+            $reslut = $stmt->execute();
+
+            if (!$reslut) {
+                throw new ServiceException(
+                    'User not delete!',
+                    self::ERROR_USER_NOT_DELETE
+                );
+            }
+
+
+
+        } catch (\PDOException $e) {
+            throw new ServiceException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return [
+            "username : " .$details['username']
+        ];
     }
 
 

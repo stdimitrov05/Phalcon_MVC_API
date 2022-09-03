@@ -37,17 +37,25 @@ return new \Phalcon\Config(
             'ignoreUri' => [
                 API_VERSION . '/',
                 API_VERSION . '/home',
+
                 API_VERSION . '/users:GET',
                 API_VERSION . '/users:POST',
                 'regex:' . API_VERSION . '/users/[1-9][0-9]*:GET',
                 'regex:' . API_VERSION . '/users/delete/[1-9][0-9]*:GET',
+                'regex:' . API_VERSION . '/users/delete/all/username/[1-9][0-9]*:GET',
                 'regex:' . API_VERSION . '/users/[1-9][0-9]*:PUT',
+
+                API_VERSION . '/tokens:GET',
+                API_VERSION . '/tokens/delete:GET',
+                API_VERSION . '/tokens:POST',
+                'regex:' . API_VERSION . '/tokens/[1-9][0-9]*:GET',
+
                 API_VERSION . '/products:POST',
                 API_VERSION . '/products:GET',
                 'regex:' . API_VERSION . '/products/[1-9][0-9]*:GET',
                 'regex:' . API_VERSION . '/products/delete/[1-9][0-9]*:GET',
                 'regex:' . API_VERSION . '/products/[1-9][0-9]*:PUT',
-                API_VERSION . '/users/id:GET',
+
 
             ]
         ],
