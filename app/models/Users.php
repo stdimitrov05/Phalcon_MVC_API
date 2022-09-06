@@ -87,7 +87,7 @@ class Users extends \Phalcon\Mvc\Model
     {
         return parent::findFirst([
             'columns' => '*',
-            'conditions' => 'id = ?1 AND  banned = 0',
+            'conditions' => 'id = ?1 AND delete_at IS NULL AND banned = 0',
             'bind' => [1 => $id],
             'bindTypes'  => [Column::BIND_PARAM_INT]
         ]);

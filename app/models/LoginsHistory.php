@@ -1,22 +1,15 @@
 <?php
+
 namespace App\Models;
 
-use App\Exceptions\ServiceException;
-use Phalcon\Db\Column;
-use Phalcon\Mvc\Model;
-
-/**
- * EmailConfirmations
- * This model registers Successful logins registered users have made
- */
-class EmailConfirmations extends Model
+class LoginsHistory extends \Phalcon\Mvc\Model
 {
     /**
      *
      * @var integer
      * @Primary
      * @Identity
-     * @Column(type="integer", length=11, nullable=false)
+     * @Column(type="integer", length=32, nullable=false)
      */
     public $id;
 
@@ -30,9 +23,16 @@ class EmailConfirmations extends Model
     /**
      *
      * @var string
-     * @Column(type="char", length=32, nullable=false)
+     * @Column(type="varchar", length=100, nullable=false)
      */
-    public $token;
+    public $jti;
+
+    /**
+     *
+     * @var string
+     * @Column(type="varchar", length=500, nullable=false)
+     */
+    public $fcm_token;
 
     /**
      *
@@ -51,9 +51,9 @@ class EmailConfirmations extends Model
     /**
      *
      * @var integer
-     * @Column(type="tinyint", length=1, nullable=false)
+     * @Column(type="integer", length=11, nullable=false)
      */
-    public $confirmed;
+    public $expire_at;
 
     /**
      *
@@ -67,25 +67,22 @@ class EmailConfirmations extends Model
      */
     public function initialize()
     {
+        $this->setSource('logins_history');
 
-        $this->setSource('email_confirmations');
-
-        $this->belongsTo('user_id', '\App\Models\Users', 'id', [
-            'alias' => 'user'
-        ]);
+        // Defines a n-1 relationship with users
+        $this->belongsTo(
+            'user_id',
+            'App\Models\Users',
+            'id',
+            [
+                'alias' => 'user'
+            ]
+        );
     }
 
     public function beforeValidationOnCreate()
     {
         $this->created_at = time();
-    }
-
-    /**
-     * Send a confirmation e-mail to the user after create the account
-     */
-    public function afterCreate()
-    {
-//        $this->mailer->confirmEmailMessage($this->token, $this->user);
     }
 
 }

@@ -119,7 +119,7 @@ class ProfilesService extends AbstractService
     public function confirmEmail($token)
     {
         try {
-            // Chech token form emailconfirmations table
+            // Check token form emailconfirmations table
             $emailConfirmation = EmailConfirmations::findFirstByToken($token);
 
             if (empty($emailConfirmation)) {
