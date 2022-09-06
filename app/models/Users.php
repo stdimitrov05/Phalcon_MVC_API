@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Lib\Slug;
+use Phalcon\Db\Column;
 use Phalcon\Security;
 
 class Users extends \Phalcon\Mvc\Model
@@ -82,6 +83,14 @@ class Users extends \Phalcon\Mvc\Model
         $security = new Security();
         $this->password = $security->hash($this->password);
     }
-
+    public function findById($id)
+    {
+        return parent::findFirst([
+            'columns' => '*',
+            'conditions' => 'id = ?1 AND  banned = 0',
+            'bind' => [1 => $id],
+            'bindTypes'  => [Column::BIND_PARAM_INT]
+        ]);
+    }
 
 }

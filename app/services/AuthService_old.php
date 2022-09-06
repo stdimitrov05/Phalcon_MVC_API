@@ -13,7 +13,7 @@ use Phalcon\Db\Column;
 use App\Models\LoginsFailed;
 use Firebase\JWT\JWT;
 
-class AuthService extends AbstractService
+class AuthServiceOld extends AbstractService
 {
 
     /**
@@ -135,7 +135,7 @@ class AuthService extends AbstractService
         // Longer expiration time if user click remember me
         $refreshExpire = $remember == 1
             ? $this->config->auth->refreshTokenRememberExpire
-            : $this->config->Fauth->refreshTokenExpire;
+            : $this->config->auth->refreshTokenExpire;
 
         // Generate jti
         $jti = base64_encode(openssl_random_pseudo_bytes(32));
@@ -291,17 +291,17 @@ class AuthService extends AbstractService
     private function registerUserThrottling($userId)
     {
         $failedLogin = new LoginsFailed();
-        $failedLogin->user_id = $userId;
+        $failedLogin->userId = $userId;
         $clientIpAddress = $this->request->getClientAddress();
         $userAgent = $this->request->getUserAgent();
 
-        $failedLogin->ip_address = empty($clientIpAddress) ? null : $clientIpAddress;
-        $failedLogin->user_agent = empty($userAgent) ? null : substr( $userAgent,0,250);
+        $failedLogin->ipAddress = empty($clientIpAddress) ? null : $clientIpAddress;
+        $failedLogin->userAgent = empty($userAgent) ? null : substr( $userAgent,0,250);
         $failedLogin->attempted = time();
         $failedLogin->save();
 
         $attempts = LoginsFailed::count([
-            'ip_address = ?0 AND attempted >= ?1',
+            'ipAddress = ?0 AND attempted >= ?1',
             'bind' => [
                 $this->request->getClientAddress(),
                 time() - 3600 * 6 // 6 minutes
@@ -520,7 +520,8 @@ class AuthService extends AbstractService
     {
         try {
             // First check the token in ResetPasswords table
-            $emailConfirmation = EmailConfirmations::findFirstByToken($token);
+            $token_table =  new TokensService();
+            $emailConfirmation = $token_table->listTokens();
 
             if (empty($emailConfirmation)) {
                 throw new ServiceException(

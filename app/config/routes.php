@@ -23,32 +23,33 @@ $profileCollection = new \Phalcon\Mvc\Micro\Collection();
 $profileCollection->setPrefix(API_VERSION. "/users");
 $profileCollection->setHandler('\App\Controllers\ProfileController', true);
 
-//Select
+//Select all Users
 $profileCollection->get(
     '/',
     'listAction'
 );
-//Insert
+//Register new User
 $profileCollection->post(
-    '/',
+    '/signup',
     'createAction'
 );
-//Select with pram id => id
+//Select User by id
 $profileCollection->get(
     '/{id:[1-9][0-9]*}',
     'detailsAction'
 );
-$profileCollection->get(
-    '/delete/all/username/{id:[1-9][0-9]*}',
-    'deleteNameAction'
+//Confirm User email
+$profileCollection->post(
+    '/email/confirm',
+    'emailAction'
 );
+//Delete User by id
 $profileCollection->get(
     '/delete/{id:[1-9][0-9]*}',
     'deleteAction'
 );
 
-
-//Update
+//Update User by id
 $profileCollection->put(
     '/{id:[1-9][0-9]*}',
     'updateAction'
@@ -131,36 +132,6 @@ $tokensCollection->get(
 
 $app->mount($tokensCollection);
 
-
-$tokensCollection = new \Phalcon\Mvc\Micro\Collection();
-$tokensCollection ->setPrefix(API_VERSION . "/tokens");
-$tokensCollection ->setHandler('\App\Controllers\TokenController', true);
-
-//Select
-$tokensCollection->get(
-    '/',
-    'listAction'
-);
-
-//Select with pram id => id
-$tokensCollection->get(
-    '/{id:[1-9][0-9]*}',
-    'detailsAction'
-);
-
-//Insert
-$tokensCollection->post(
-    '/',
-    'createAction'
-);
-
-//Delete
-$tokensCollection->get(
-    '/delete',
-    'deleteAction'
-);
-
-$app->mount($tokensCollection);
 
 
 // Not found URLs

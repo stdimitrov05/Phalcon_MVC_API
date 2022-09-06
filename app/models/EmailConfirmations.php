@@ -1,6 +1,8 @@
 <?php
 namespace App\Models;
 
+use App\Exceptions\ServiceException;
+use Phalcon\Db\Column;
 use Phalcon\Mvc\Model;
 
 /**
@@ -85,5 +87,16 @@ class EmailConfirmations extends Model
     {
 //        $this->mailer->confirmEmailMessage($this->token, $this->user);
     }
+
+public function findFirstByToken($token)
+{
+
+    return parent::findFirst([
+        'columns' => '*',
+        'conditions' => 'token = ?1 ',
+        'bind' => [1 => $token],
+        'bindTypes'  => [Column::BIND_PARAM_STR]
+    ]);
+}
 
 }
