@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Exceptions\ServiceException;
+use App\Lib\Helper;
+use App\Models\EmailConfirmations;
 use App\Models\Users;
 use App\Models\Tokens;
 
@@ -37,7 +39,8 @@ class ProfilesService extends AbstractService
     {
 
         try {
-
+            //Starting Transaction
+            $this->db->begin();
             $users = new Users();
             $users->assign($data); //table data
             $result = $users->create(); // create
@@ -49,8 +52,26 @@ class ProfilesService extends AbstractService
                 );
             }
 
+            //User data
+            $ipAddress = $this->request->getClientAddress();
+            $userAgent = $this->request->getUserAgent();
+            //Random string Token
+            $token = Helper::generateToken();
+            //Send Email with verify token
+            $emailConfirmations = new EmailConfirmations();
+            $emailConfirmations->user_id = $users->id;
+            $emailConfirmations->token = $token;
+            if ($ipAddress) $emailConfirmations->ip_address = $ipAddress;
+            if ($userAgent) $emailConfirmations->user_agent = $userAgent;
+            $emailConfirmations->save();
+            //Send Email
+            //  $this->mailer->welcome($user->email, $user->username, $token);
+
+            $this->db->commit();
+
 
         } catch (\PDOException $e) {
+            $this->db->rollback();
             throw new ServiceException($e->getMessage(), $e->getCode(), $e);
         }
 
@@ -59,8 +80,6 @@ class ProfilesService extends AbstractService
         ];
 
     }
-
-
 
 
     /**
@@ -223,13 +242,12 @@ class ProfilesService extends AbstractService
             }
 
 
-
         } catch (\PDOException $e) {
             throw new ServiceException($e->getMessage(), $e->getCode(), $e);
         }
 
         return [
-            "username : " .$details['username']
+            "username : " . $details['username']
         ];
     }
 

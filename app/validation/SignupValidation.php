@@ -27,7 +27,6 @@ class SignupValidation extends Validation
                     "message" => 'Email address is already in use.'
                 ])
 
-
             ]
         );
 
@@ -50,7 +49,7 @@ class SignupValidation extends Validation
                     'message' => 'Username can only contain a-z, A-Z, 0-9 and "_".',
                     'cancelOnFail' => true
                 ]),
-                new Validation\Validator\Uniqueness([
+               new Validation\Validator\Uniqueness([
                     'model' =>new Users(),
                     "message" => 'Username is already in use.'
                 ])
