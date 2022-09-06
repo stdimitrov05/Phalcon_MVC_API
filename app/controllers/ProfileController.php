@@ -152,7 +152,7 @@ class ProfileController extends AbstractController
             $data[$key] = $this->request->getPost($key, ['string', 'trim']);
         }
 
-        // Start validation
+        // Start validation with data
         $validation = new SignupValidation();
         $messages = $validation->validate($data);
 
@@ -161,6 +161,7 @@ class ProfileController extends AbstractController
         }
 
         try {
+
             //Passing data to business logic and prepare the response
             $token = $this->profilesService->create($data);
 

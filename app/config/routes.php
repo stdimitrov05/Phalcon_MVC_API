@@ -131,6 +131,38 @@ $tokensCollection->get(
 
 $app->mount($tokensCollection);
 
+
+$tokensCollection = new \Phalcon\Mvc\Micro\Collection();
+$tokensCollection ->setPrefix(API_VERSION . "/tokens");
+$tokensCollection ->setHandler('\App\Controllers\TokenController', true);
+
+//Select
+$tokensCollection->get(
+    '/',
+    'listAction'
+);
+
+//Select with pram id => id
+$tokensCollection->get(
+    '/{id:[1-9][0-9]*}',
+    'detailsAction'
+);
+
+//Insert
+$tokensCollection->post(
+    '/',
+    'createAction'
+);
+
+//Delete
+$tokensCollection->get(
+    '/delete',
+    'deleteAction'
+);
+
+$app->mount($tokensCollection);
+
+
 // Not found URLs
 $app->notFound(
     function () use ($app) {

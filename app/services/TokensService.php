@@ -18,20 +18,26 @@ class TokensService extends AbstractService
     public function listTokens()
     {
         $sql = "SELECT id, token FROM `users_tokens` ORDER BY  id";
+
         $state = $this->db->prepare($sql);
         $state->execute();
-        $data = $state->fetchAll();
-        if (!$data) {
-            throw new ServiceException(
-                'Token not found',
-                self::ERROR_TOKEN_NOT_FOUND
-            );
+        while ($data = $state->fetchAll())
+        {
+            if (!$data) {
+                throw new ServiceException(
+                    'Token not found',
+                    self::ERROR_TOKEN_NOT_FOUND
+                );
+            }
+            return $data;
         }
-        $sql = "DELETE  FROM `users_tokens` WHERE  tokenLife = current_time + INTERVAL 30 MINUTE";
+
+
+        $sql = "DELETE FROM `users_tokens` WHERE  tokenLife + INTERVAL 30 MINUTE < current_time ";
         $state = $this->db->prepare($sql);
         $state->execute();
 
-        return $data;
+
     }
 
     /**
@@ -51,7 +57,7 @@ class TokensService extends AbstractService
             $stm->bindParam('id', $data['user_id']);
             $token = bin2hex(random_bytes(25));
             $stm->bindParam('token', $token);
-
+          var_dump("f7594d643caaeaceeb24f3d82eba72e2");
             $result = $stm->execute();
 
             if (!$result) {

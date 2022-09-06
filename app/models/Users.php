@@ -1,30 +1,71 @@
 <?php
+
 namespace App\Models;
 
 use App\Lib\Slug;
-use Phalcon\Db\Column;
-use Phalcon\Mvc\ModelInterface;
+use Phalcon\Security;
 
 class Users extends \Phalcon\Mvc\Model
 {
-    /*
-     * Model for Users Table to
+    //Model Users
+
+    /**
      *
+     * @var integer
+     * @Primary
+     * @Identity
+     * @Column(type="integer", length=32, nullable=false)
+     */
+    public $id;
+
+    /**
+     * @var string
+     * @Column (type="string",lenght=20, nullable=false)
      * */
-    // username - varchar(50)
     public $username;
-    //email - varchar(255)
+
+    /**
+     * @var string
+     * @Column (type="string",lenght=255, nullable=false)
+     * */
     public $email;
-    //password - int unsigned not null
+
+    /**
+     * @var string
+     * @Column (type="string",lenght=255, nullable=false)
+     * */
     public $password;
-    //verify - int
-    public  $verify;
-    //ban - int
-    public $ban;
-    //status - int
-    public $status;
-    //createAt - int
-    public $createAt;
+
+    /**
+     * @var string
+     * @Column (type="string",lenght=60, nullable=false)
+     * */
+    public $url;
+
+    /**
+     * @var integer 0 or 1 => online or offline
+     * @Column (type="integer",lenght=1, nullable=false)
+     * */
+
+    public $active;
+
+    /**
+     * @var integer  0 or 1
+     * @Column (type="integer",lenght=1, nullable=false)
+     * */
+    public $banned;
+
+    /**
+     * @var integer
+     * @Column (type="integer",lenght=11, nullable=false)
+     * */
+    public $created_at;
+
+    /**
+     * @var integer
+     * @Column (type="integer",lenght=11, nullable=false)
+     * */
+    public $delete_at;
 
     public function initialize()
     {
@@ -33,7 +74,13 @@ class Users extends \Phalcon\Mvc\Model
 
     public function beforeValidationOnCreate()
     {
-        $this->createAt = time();
+        // Created user url
+        $this->url = Slug::generate($this->username);
+        //Insert time in created_at
+        $this->created_at = time();
+        //Hashed password
+        $security = new Security();
+        $this->password = $security->hash($this->password);
     }
 
 

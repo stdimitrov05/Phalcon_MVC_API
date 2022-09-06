@@ -42,7 +42,6 @@ class ProfilesService extends AbstractService
             $users->assign($data); //table data
             $result = $users->create(); // create
 
-
             if (!$result) {
                 throw new ServiceException(
                     'Unable to create user',
@@ -60,6 +59,9 @@ class ProfilesService extends AbstractService
         ];
 
     }
+
+
+
 
     /**
      * Product details
