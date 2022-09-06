@@ -152,7 +152,7 @@ class ProfileController extends AbstractController
             $data[$key] = $this->request->getPost($key, ['string', 'trim']);
         }
 
-        // Start validation
+        // Start validation with data
         $validation = new SignupValidation();
         $messages = $validation->validate($data);
 
@@ -161,6 +161,7 @@ class ProfileController extends AbstractController
         }
 
         try {
+
             //Passing data to business logic and prepare the response
             $token = $this->profilesService->create($data);
 
@@ -184,10 +185,51 @@ class ProfileController extends AbstractController
 
 
     /**
-     * Create New User
-     * @param $id
-     * @return array
+     * Confirm user email
+     *
+     * @return null
      */
+    public function emailAction()
+    {
+        //Define Error arr
+        $error = [];
+        //Get token from url
+        $token =  trim($this->request->getPost('token'));
+
+        //Check token != 0
+        if (empty($token))
+        {
+            $error['token'] = 'Missing token';
+        }
+
+        //Check errors
+        if ($error) {
+            $exception = new Http400Exception(
+                'Input parameters validation error',
+                self::ERROR_INVALID_REQUEST
+            );
+            throw $exception->addErrorDetails($error);
+        }
+
+        try {
+            $response = $this->profilesService->confirmEmail($token);
+
+        } catch (ServiceException $e) {
+            switch ($e->getCode()) {
+                case AbstractService::ERROR_CONFIRMATION_TOKEN_NOT_EXIST:
+                case AbstractService::ERROR_CONFIRMATION_TOKEN_EXPIRED:
+                case AbstractService::ERROR_CONFIRMATION_CONFIRMED:
+                    throw new Http422Exception($e->getMessage(), $e->getCode(), $e);
+                case AbstractService::ERROR_USER_NOT_FOUND:
+                    throw new Http404Exception($e->getMessage(), $e->getCode(), $e);
+                default:
+                    throw new Http500Exception('Internal Server Error', $e->getCode(), $e);
+            }
+        }
+
+        return $response;
+    }
+
 
 
 }

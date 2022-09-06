@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Exceptions\ServiceException;
+use App\Lib\Helper;
+use App\Models\EmailConfirmations;
 use App\Models\Users;
 use App\Models\Tokens;
 
@@ -37,11 +39,11 @@ class ProfilesService extends AbstractService
     {
 
         try {
-
+            //Starting Transaction
+            $this->db->begin();
             $users = new Users();
             $users->assign($data); //table data
             $result = $users->create(); // create
-
 
             if (!$result) {
                 throw new ServiceException(
@@ -50,8 +52,26 @@ class ProfilesService extends AbstractService
                 );
             }
 
+            //User data
+            $ipAddress = $this->request->getClientAddress();
+            $userAgent = $this->request->getUserAgent();
+            //Random string Token
+            $token = Helper::generateToken();
+            //Send Email with verify token
+            $emailConfirmations = new EmailConfirmations();
+            $emailConfirmations->user_id = $users->id;
+            $emailConfirmations->token = $token;
+            if ($ipAddress) $emailConfirmations->ip_address = $ipAddress;
+            if ($userAgent) $emailConfirmations->user_agent = $userAgent;
+            $emailConfirmations->save();
+            //Send Email
+            //  $this->mailer->welcome($user->email, $user->username, $token);
+
+            $this->db->commit();
+
 
         } catch (\PDOException $e) {
+            $this->db->rollback();
             throw new ServiceException($e->getMessage(), $e->getCode(), $e);
         }
 
@@ -61,8 +81,9 @@ class ProfilesService extends AbstractService
 
     }
 
+
     /**
-     * Product details
+     * User details
      *
      * @param int $id
      * @return array
@@ -81,8 +102,8 @@ class ProfilesService extends AbstractService
 
             if (!$details) {
                 throw new ServiceException(
-                    'Product not found',
-                    self::ERROR_PRODUCT_NOT_FOUND
+                    'User not found',
+                    self::ERROR_USER_NOT_FOUND
                 );
             }
 
@@ -95,7 +116,7 @@ class ProfilesService extends AbstractService
     }
 
     /**
-     * Product update
+     * User update profile
      *
      * @param int $id
      * @param array $data
@@ -119,8 +140,8 @@ class ProfilesService extends AbstractService
                 );
             }
             // True
-            $sql = "UPDATE `users` 
-                    Set username = :username ,  email = :email, password = :password 
+            $sql = "UPDATE `users`
+                    Set username = :username ,  email = :email, password = :password
                     WHERE id = :id";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam('id', $id);
@@ -141,9 +162,8 @@ class ProfilesService extends AbstractService
 
         return null;
     }
-
     /**
-     * Product delete by id
+     * User delete by id
      * @param int $id
      * @return array
      *
@@ -185,50 +205,66 @@ class ProfilesService extends AbstractService
         return null;
     }
 
-    /**
-     * Product delete by username
-     * @param int $id
-     * @return array
-     *
-     */
-    public function deleteByUsername(int $id)
+
+    public function confirmEmail($token)
     {
         try {
-            $sql = "SELECT username FROM `users` WHERE id = :id";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam('id', $id);
-            $stmt->execute();
-            $details = $stmt->fetch();
+            // Check token form emailconfirmations table
+            $emailConfirmation = EmailConfirmations::findFirstByToken($token);
 
-            if (!$details) {
+            if (empty($emailConfirmation)) {
                 throw new ServiceException(
-                    'User not found',
+                    'Confirmation token is not valid.',
+                    self::ERROR_CONFIRMATION_TOKEN_NOT_EXIST
+                );
+            }
+
+            $expiredToken = time() - $emailConfirmation->created_at > 24 * 60 * 60;
+
+            // Is the token expired
+            if ($expiredToken === true) {
+                throw new ServiceException(
+                    'Confirmation token has expired.',
+                    self::ERROR_CONFIRMATION_TOKEN_EXPIRED
+                );
+            }
+
+            // Is email already confirmed
+            if ($emailConfirmation->confirmed != 0) {
+                throw new ServiceException(
+                    'Your email is already confirmed.',
+                    self::ERROR_CONFIRMATION_CONFIRMED
+                );
+            }
+
+            // Find user that matches the token
+            $user = Users::findById($emailConfirmation->user_id);
+
+            if (!$user) {
+                throw new ServiceException(
+                    "User not found",
                     self::ERROR_USER_NOT_FOUND
                 );
             }
-            // True
-            $sql = "DELETE  FROM `users`
-                    WHERE username = :username";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam('username', $details['username']);
-            $reslut = $stmt->execute();
 
-            if (!$reslut) {
-                throw new ServiceException(
-                    'User not delete!',
-                    self::ERROR_USER_NOT_DELETE
-                );
-            }
+            // Change user to active
+            $user->active = 1;
+            $user->update();
 
+            // Make current confirm token invalid
+            $emailConfirmation->confirmed = 1;
+            $emailConfirmation->save();
 
+            // Logs the user in
+            $aut =new AuthService();
+            $tokens = $aut->authenticateUser($user, ['remember' => 1]);
 
         } catch (\PDOException $e) {
             throw new ServiceException($e->getMessage(), $e->getCode(), $e);
         }
 
-        return [
-            "username : " .$details['username']
-        ];
+        return $tokens;
+
     }
 
 
