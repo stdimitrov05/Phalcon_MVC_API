@@ -115,6 +115,96 @@ class ProfilesService extends AbstractService
 
     }
 
+    /**
+     * User update profile
+     *
+     * @param int $id
+     * @param array $data
+     * @return array
+     *
+     */
+
+    public function update(int $id, array $data)
+    {
+
+        try {
+            $sql = "SELECT id FROM `users` WHERE id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam('id', $id);
+            $stmt->execute();
+            $table_id = $stmt->fetch();
+            if (!$table_id) {
+                throw new ServiceException(
+                    'User not found',
+                    self::ERROR_USER_NOT_FOUND
+                );
+            }
+            // True
+            $sql = "UPDATE `users`
+                    Set username = :username ,  email = :email, password = :password
+                    WHERE id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam('id', $id);
+            $stmt->bindParam('username', $data['username']);
+            $stmt->bindParam('email', $data['email']);
+            $stmt->bindParam('password', $data['password']);
+            $reslut = $stmt->execute();
+            if (!$reslut) {
+                throw new ServiceException(
+                    'Unable to update user',
+                    self::ERROR_UNABLE_UPDATE_USER
+                );
+            }
+
+        } catch (\PDOException $e) {
+            throw new ServiceException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return null;
+    }
+    /**
+     * User delete by id
+     * @param int $id
+     * @return array
+     *
+     */
+
+    public function delete(int $id)
+    {
+        try {
+            $sql = "SELECT id FROM `users` WHERE id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam('id', $id);
+            $stmt->execute();
+            $details = $stmt->fetch();
+
+            if (!$details) {
+                throw new ServiceException(
+                    'User not found',
+                    self::ERROR_USER_NOT_FOUND
+                );
+            }
+            // True
+            $sql = "DELETE FROM `users`
+                    WHERE id = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam('id', $id);
+            $reslut = $stmt->execute();
+
+            if (!$reslut) {
+                throw new ServiceException(
+                    'User not delete!',
+                    self::ERROR_USER_NOT_DELETE
+                );
+            }
+
+        } catch (\PDOException $e) {
+            throw new ServiceException($e->getMessage(), $e->getCode(), $e);
+        }
+
+        return null;
+    }
+
 
     public function confirmEmail($token)
     {
