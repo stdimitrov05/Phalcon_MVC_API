@@ -8,7 +8,7 @@ use App\Exceptions\HttpExceptions\Http422Exception;
 use App\Exceptions\HttpExceptions\Http500Exception;
 use App\Exceptions\ServiceException;
 use App\Services\AbstractService;
-use App\Services\AuthServiceOld;
+use App\Services\AuthService;
 use App\Validation\ChangePasswordValidation;
 use App\Validation\LoginValidation;
 use App\Validation\ForgotPasswordValidation;

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 /**
  * Business-logic for site frontend
  *
@@ -21,23 +20,6 @@ class FrontendService extends AbstractService
         return [
             'status' => 'Working'
         ];
-    }
-
-
-    public function getUserProfile()
-    {
-        $user = new \UserProfile();
-        $data = $user->getUsers();
-
-        return $data ;
-    }
-
-    public function getUserProfilebyId()
-    {
-        $user_data = new \UserProfile();
-        $data = $user_data->getProfileById();
-
-        return $data;
     }
 
 }
