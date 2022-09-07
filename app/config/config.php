@@ -36,17 +36,13 @@ return new \Phalcon\Config(
             'refreshTokenRememberExpire' => getenv('JWT_REFRESH_TOKEN_REMEMBER_EXPIRE'),
             'ignoreUri' => [
                 API_VERSION . '/',
-                API_VERSION . '/home',
-
-                API_VERSION . '/users:GET',
-                API_VERSION . '/users/signup:POST',
+                API_VERSION . '/login:POST',
+                API_VERSION . '/signup:POST',
+                API_VERSION . '/users/password/forgot:POST',
+                API_VERSION . '/users/password/verify-token:POST',
+                API_VERSION . '/users/password/change:POST',
                 API_VERSION . '/users/email/confirm:POST',
-                'regex:' . API_VERSION . '/users/[1-9][0-9]*:GET',
-                'regex:' . API_VERSION . '/users/delete/[1-9][0-9]*:GET',
-                'regex:' . API_VERSION . '/users/[1-9][0-9]*:PUT',
-
-
-
+                API_VERSION . '/users/email/resend-confirmation:POST'
             ]
         ],
     ]

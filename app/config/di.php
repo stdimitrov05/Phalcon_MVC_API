@@ -52,7 +52,7 @@ $di->setShared('mailer', function () use ($config) {
 $di->set(
     'logger',
     function () {
-        $adapter = new Stream( APP_PATH . '/logs/main.logs');
+        $adapter = new Stream( APP_PATH . '/logs/main.log');
         $logger  = new Logger(
             'messages',
             [
@@ -108,9 +108,6 @@ $di->setShared(
 );
 
 $di->setShared('frontendService', '\App\Services\FrontendService');
-$di->setShared('profilesService', '\App\Services\ProfilesService');
-$di->setShared('tokensService', '\App\Services\TokensService');
-$di->setShared('productsService', '\App\Services\ProductsService');
 $di->setShared('usersService', '\App\Services\UsersService');
 $di->setShared('authService', '\App\Services\AuthService');
 

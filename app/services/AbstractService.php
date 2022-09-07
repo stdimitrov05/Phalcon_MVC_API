@@ -25,16 +25,8 @@ abstract class AbstractService extends \Phalcon\DI\Injectable
      * User errors
      */
     const ERROR_UNABLE_CREATE_USER = 11001;
-    const ERROR_DUPLICATE_USER = 1108;
     const ERROR_USER_NOT_FOUND = 11002;
     const ERROR_UNABLE_UPDATE_USER = 11004;
-    const ERROR_USER_NOT_DELETE = 11006;
-
-
-    const ERROR_UNABLE_CREATE_TOKEN = 110010;
-    const ERROR_TOKEN_NOT_FOUND = 11020;
-    const ERROR_UNABLE_UPDATE_TOKEN = 11030;
-    const ERROR_TOKEN_NOT_DELETE = 11040;
 
     /*
      * Email confirmation errors
@@ -42,14 +34,6 @@ abstract class AbstractService extends \Phalcon\DI\Injectable
     const ERROR_CONFIRMATION_TOKEN_NOT_EXIST = 11010;
     const ERROR_CONFIRMATION_TOKEN_EXPIRED = 11011;
     const ERROR_CONFIRMATION_CONFIRMED = 11012;
-
-    /**
-     * Product errors
-     */
-    const ERROR_UNABLE_CREATE_PRODUCT = 12001;
-    const ERROR_PRODUCT_NOT_FOUND = 12010;
-    const ERROR_UNABLE_UPDATE_PRODUCT = 12020;
-    const ERROR_PRODUCT_NOT_Delete = 12030;
 
     /*
      * Auth errors

@@ -1,37 +1,33 @@
 <?php
 namespace App\Models;
 
-use Phalcon\Http\Request;
+use App\Lib\Helper;
 use Phalcon\Mvc\Model;
 
 /**
- * EmailConfirmations
- * This model registers Successful logins registered users have made
+ * ResetPasswords
+ * Stores the reset password codes and their evolution
  */
-class EmailConfirmations extends Model
+class ResetPasswords extends Model
 {
+
     /**
      *
      * @var integer
-     * @Primary
-     * @Identity
-     * @Column(type="integer", length=11, nullable=false)
      */
     public $id;
 
     /**
      *
      * @var integer
-     * @Column(type="integer", length=11, nullable=true)
      */
     public $user_id;
 
     /**
      *
      * @var string
-     * @Column(type="char", length=32, nullable=false)
      */
-    public $token;
+    public $code;
 
     /**
      *
@@ -50,40 +46,46 @@ class EmailConfirmations extends Model
     /**
      *
      * @var integer
-     * @Column(type="tinyint", length=1, nullable=false)
-     */
-    public $confirmed;
-
-    /**
-     *
-     * @var integer
-     * @Column(type="integer", length=11, nullable=false)
      */
     public $created_at;
 
     /**
-     * Initialize method for model.
+     *
+     * @var string
      */
+    public $reset;
+
     public function initialize()
     {
-        $this->setSource('email_confirmations');
+        $this->setSource('reset_passwords');
 
         $this->belongsTo('user_id', '\App\Models\Users', 'id', [
             'alias' => 'user'
         ]);
     }
 
+    /**
+     * Before create the user assign a password
+     */
     public function beforeValidationOnCreate()
     {
+        // Timestamp the reset
         $this->created_at = time();
+
+        // Generate a random confirmation code
+        $this->code = Helper::generateToken();
+
+        // Set status to non-confirmed
+        $this->reset = 0;
     }
 
     /**
-     * Send a confirmation e-mail to the user after create the account
+     * Send an e-mail to users allowing him/her to reset his/her password
      */
     public function afterCreate()
     {
-//        $this->mailer->confirmEmailMessage($this->token, $this->user);
+//        $mailer = $this->getDI()->getMailer();
+//        $mailer->resetPassword($this->user->email, $this->user->stageName, $this->code);
     }
 
 }

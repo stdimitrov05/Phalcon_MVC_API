@@ -187,7 +187,7 @@ class AuthService extends AbstractService
                     'order' => 'created_at DESC',
                     'bind' => [
                         'jti' => $jwtDecoded->jti,
-                        'userId' => $jwtDecoded->userId
+                        'userId' => $jwtDaecoded->userId
                     ],
                     'limit' => 1
                 ]
@@ -446,7 +446,7 @@ class AuthService extends AbstractService
             }
 
             // Change user password
-            $user->password = $this->getDI()->getSecurity()->hash($data['password']);
+            $user->password = $this->security->hash($data['password']);
             $result = $user->update();
 
             if (!$result) {

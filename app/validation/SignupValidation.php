@@ -1,11 +1,12 @@
 <?php
 namespace App\Validation;
+
 use App\Models\Users;
-use Couchbase\User;
 use Phalcon\Validation;
 use Phalcon\Validation\Validator\PresenceOf;
 use Phalcon\Validation\Validator\StringLength;
 use Phalcon\Validation\Validator\Email;
+use Phalcon\Validation\Validator\Uniqueness;
 
 class SignupValidation extends Validation
 {
@@ -22,11 +23,10 @@ class SignupValidation extends Validation
                     'message' => 'Enter a valid email.',
                     'cancelOnFail' => true
                 ]),
-                new Validation\Validator\Uniqueness([
-                    'model' =>new Users(),
-                    "message" => 'Email address is already in use.'
+                new Uniqueness([
+                    'model'   => new Users(),
+                    'message' => 'Email address is already in use.'
                 ])
-
             ]
         );
 
@@ -49,12 +49,13 @@ class SignupValidation extends Validation
                     'message' => 'Username can only contain a-z, A-Z, 0-9 and "_".',
                     'cancelOnFail' => true
                 ]),
-               new Validation\Validator\Uniqueness([
-                    'model' =>new Users(),
-                    "message" => 'Username is already in use.'
+                new Uniqueness([
+                    'model'   => new Users(),
+                    'message' => 'Username is already in use.'
                 ])
             ]
         );
+
         $this->rules(
             'password',
             [
@@ -68,7 +69,5 @@ class SignupValidation extends Validation
                 ])
             ]
         );
-
-
     }
 }
